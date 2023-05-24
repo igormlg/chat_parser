@@ -11,6 +11,7 @@ from aiogram.utils.markdown import hlink
 from dotenv import load_dotenv 
 
 import os
+import time
 
 env_path = './.env'
 load_dotenv(env_path)
@@ -24,10 +25,10 @@ CHANEL_ID = os.getenv('CHANEL_ID')
 # client = TelegramClient('client_t', api_id, api_hash).start()
 # client = TelegramClient('client_t2', api_id, api_hash).start()
 # client = TelegramClient('client_t3', api_id, api_hash).start()
-# client = TelegramClient('client_med', api_id, api_hash).start()
+client = TelegramClient('client_med', api_id, api_hash).start()
 # client = TelegramClient('client_03', api_id, api_hash).start()
 # client = TelegramClient('client_nonamesp', api_id, api_hash).start()
-client = TelegramClient('client_igor', api_id, api_hash).start()
+# client = TelegramClient('client_igor', api_id, api_hash).start()
 bot = Bot(bot_token)
 dp = Dispatcher(bot)
 
@@ -208,4 +209,9 @@ async def callback_begin(callback: types.CallbackQuery):
         await client.run_until_disconnected()
 
 if __name__ == '__main__':
-    executor.start_polling(dp, skip_updates=True)
+    while True:
+        try:
+            executor.start_polling(dp, skip_updates=True)
+        except:
+            time.sleep(20)
+            
