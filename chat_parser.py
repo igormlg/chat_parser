@@ -24,8 +24,8 @@ CHANEL_ID = os.getenv('CHANEL_ID')
 
 # client = TelegramClient('client_t', api_id, api_hash).start()
 # client = TelegramClient('client_t2', api_id, api_hash).start()
-# client = TelegramClient('client_t3', api_id, api_hash).start()
-client = TelegramClient('client_med', api_id, api_hash).start()
+client = TelegramClient('client_t3', api_id, api_hash).start()
+# client = TelegramClient('client_med', api_id, api_hash).start()
 # client = TelegramClient('client_03', api_id, api_hash).start()
 # client = TelegramClient('client_nonamesp', api_id, api_hash).start()
 # client = TelegramClient('client_igor', api_id, api_hash).start()
@@ -153,65 +153,68 @@ async def callback_begin(callback: types.CallbackQuery):
 
     @client.on(events.NewMessage(chats=(title_groups)))
     async def normal_handler(event):
-        group_url = ''
-        group_title = ''
-        message_id = event.message.to_dict()
-        message_id = message_id['id']
-        chat_id = event.message.peer_id.to_dict()
+        try:
+            group_url = ''
+            group_title = ''
+            message_id = event.message.to_dict()
+            message_id = message_id['id']
+            chat_id = event.message.peer_id.to_dict()
 
-        # if not hasattr(event.message, 'from_id'):
-        #     return
+            # if not hasattr(event.message, 'from_id'):
+            #     return
+            
+            # user_id = event.message.from_id.to_dict()
+            # user_id = user_id['user_id']
+            # user_link = f'tg://user?id={user_id}'
+            # user_link = f'tg://openmessage?user_id={user_id}'
+            # user_link = ['написать сообщение'](f'tg://user?id={user_id}')
+            # user_link = f"<a href='tg://user?id={user_id}'>написать сообщение</a>"
+
+            if 'channel_id' in chat_id:
+                chat_id = chat_id['channel_id']
+            elif 'chat_id' in chat_id:
+                chat_id = chat_id['chat_id']
+
+            message_url = f'https://t.me/c/{chat_id}/{message_id}'
+            new_message = event.message.to_dict()
+            new_message = new_message['message']
+
+            for ma in message_arr:
+                if (ma in new_message.lower()) and (len(new_message) <= 200):
+
+                    for mg in match_groups:
+                        if mg.id == chat_id:
+                            mg_dict = mg.to_dict()
+
+                            if 'username' in mg_dict:
+                                group_url = f'https://t.me/{mg.username}'
+                            group_title = mg.title
+
+                    msg_txt = "{word}\n" \
+                            "{group_link}\n" \
+                            "{message_link}\n" \
+                            "----------------\n\n" \
+                            "{message}" \
+                        .format(**dict(
+                            word='💡 ' + ma, 
+                            group_link='💬 ' + hlink(group_title, group_url),
+                            message_link='🔗 ' + message_url,
+                            # user_link='👤 ' + hlink('написать сообщение', user_link),
+                            # user_link='👤 ' + user_link,
+                            message=new_message
+                        ))
+
+                    await bot.send_message(CHANEL_ID, text=msg_txt, parse_mode='html')
+                    break
+
+            await client.run_until_disconnected()
         
-        # user_id = event.message.from_id.to_dict()
-        # user_id = user_id['user_id']
-        # user_link = f'tg://user?id={user_id}'
-        # user_link = f'tg://openmessage?user_id={user_id}'
-        # user_link = ['написать сообщение'](f'tg://user?id={user_id}')
-        # user_link = f"<a href='tg://user?id={user_id}'>написать сообщение</a>"
-
-        if 'channel_id' in chat_id:
-            chat_id = chat_id['channel_id']
-        elif 'chat_id' in chat_id:
-            chat_id = chat_id['chat_id']
-
-        message_url = f'https://t.me/c/{chat_id}/{message_id}'
-        new_message = event.message.to_dict()
-        new_message = new_message['message']
-
-        for ma in message_arr:
-            if (ma in new_message.lower()) and (len(new_message) <= 200):
-
-                for mg in match_groups:
-                    if mg.id == chat_id:
-                        mg_dict = mg.to_dict()
-
-                        if 'username' in mg_dict:
-                            group_url = f'https://t.me/{mg.username}'
-                        group_title = mg.title
-
-                msg_txt = "{word}\n" \
-                        "{group_link}\n" \
-                        "{message_link}\n" \
-                        "----------------\n\n" \
-                        "{message}" \
-                    .format(**dict(
-                        word='💡 ' + ma, 
-                        group_link='💬 ' + hlink(group_title, group_url),
-                        message_link='🔗 ' + message_url,
-                        # user_link='👤 ' + hlink('написать сообщение', user_link),
-                        # user_link='👤 ' + user_link,
-                        message=new_message
-                    ))
-
-                await bot.send_message(CHANEL_ID, text=msg_txt, parse_mode='html')
-                break
-
-        await client.run_until_disconnected()
+        except Exception as err:
+            print(err)
 
 if __name__ == '__main__':
-    while True:
-        try:
-            executor.start_polling(dp, skip_updates=True)
-        except:
-            time.sleep(20)
-            
+    try: 
+        executor.start_polling(dp, skip_updates=True)
+    except Exception as err:
+        print(err)
+
