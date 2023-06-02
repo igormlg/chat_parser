@@ -76,8 +76,8 @@ async def start_command(message: types.Message):
 
     for chat in chats:
         try:
-            # if chat.megagroup == True:
-            if chat.participants_count: # все чаты
+            if chat.megagroup == True:
+            # if chat.participants_count: # все чаты
                 groups.append(chat)
         except:
             continue
@@ -213,8 +213,9 @@ async def callback_begin(callback: types.CallbackQuery):
             print(err)
 
 if __name__ == '__main__':
-    try: 
-        executor.start_polling(dp, skip_updates=True)
-    except Exception as err:
-        print(err)
+    while True:
+        try: 
+            executor.start_polling(dp, skip_updates=True)
+        except Exception as err:
+            print(err)
 
