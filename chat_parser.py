@@ -24,11 +24,11 @@ CHANEL_ID = os.getenv('CHANEL_ID')
 
 # client = TelegramClient('client_t', api_id, api_hash).start()
 # client = TelegramClient('client_t2', api_id, api_hash).start()
-client = TelegramClient('client_t3', api_id, api_hash).start()
+# client = TelegramClient('client_t3', api_id, api_hash).start()
 # client = TelegramClient('client_med', api_id, api_hash).start()
 # client = TelegramClient('client_03', api_id, api_hash).start()
 # client = TelegramClient('client_nonamesp', api_id, api_hash).start()
-# client = TelegramClient('client_igor', api_id, api_hash).start()
+client = TelegramClient('client_igor', api_id, api_hash).start()
 bot = Bot(bot_token)
 dp = Dispatcher(bot)
 
@@ -76,8 +76,8 @@ async def start_command(message: types.Message):
 
     for chat in chats:
         try:
-            if chat.megagroup == True:
-            # if chat.participants_count: # все чаты
+            # if chat.megagroup == True:
+            if chat.participants_count: # все чаты
                 groups.append(chat)
         except:
             continue
